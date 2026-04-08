@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
-  /* === ESPORTS THEME V30 (STYLE UNTOUCHED) === */
+  /* === ESPORTS THEME V30 === */
   :root {
     --bg: #121212;
     --card: #1e1e1e;
@@ -23,7 +23,8 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Roboto Mono', monospace;
     margin: 0; padding: 1rem; 
     padding-bottom: 220px; 
-    padding-top: env(safe-area-inset-top);
+    /* 針對 15 PM 靈動島，稍微增加頂部安全距離 */
+    padding-top: calc(env(safe-area-inset-top) + 10px);
     background-color: var(--bg); color: var(--text-main); 
     display: flex; justify-content: center;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
@@ -55,12 +56,13 @@
     font-family: 'Roboto Mono'; 
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
   }
-  .sub-label { font-size: 0.85rem; color: var(--accent); margin-top: 20px; margin-bottom: 8px; display:block; font-weight:bold; border-bottom: 1px dashed #333; padding-bottom: 4px; }
 
+  /* 優化觸控範圍與高度 */
   input, select, textarea {
     width: 100%; background: #181818; border: 1px solid #444; color: var(--text-main);
-    padding: 0 10px; height: 45px; line-height: 45px;
-    font-size: 15px; margin-bottom: 5px; border-radius: 4px; transition: 0.2s; font-family: 'Roboto Mono';
+    padding: 0 10px; height: 48px; line-height: 48px; /* 加高避免按空 */
+    font-size: 16px; /* 16px 避免 iOS 自動縮放 */
+    margin-bottom: 5px; border-radius: 6px; transition: 0.2s; font-family: 'Roboto Mono';
     appearance: none; -webkit-appearance: none;
     min-width: 0;
   }
@@ -68,27 +70,27 @@
   input[type="date"], input[type="time"] { display: flex; align-items: center; padding-top: 2px; }
   textarea { height: auto; min-height: 80px; padding: 10px; line-height: 1.5; }
 
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
   .time-field { display: flex; gap: 5px; }
   
-  .item-row { background: #252525; padding: 10px; margin-bottom: 10px; border-radius: 6px; border-left: 3px solid var(--border); position: relative; }
-  .item-controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 8px; }
-  .item-controls input { text-align: center; padding: 0; height: 38px; font-size: 0.9rem; }
-  .custom-input { display: none; border-color: var(--accent); margin-top:5px; }
+  .item-row { background: #252525; padding: 12px; margin-bottom: 12px; border-radius: 8px; border-left: 3px solid var(--border); position: relative; }
+  .item-controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+  .item-controls input { text-align: center; padding: 0; height: 44px; font-size: 0.95rem; }
+  .custom-input { display: none; border-color: var(--accent); margin-top:8px; }
   .custom-input.show { display: block; }
 
   button { 
-    background: #333; color: #ddd; border: none; padding: 0; height: 45px; 
-    border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem; 
+    background: #333; color: #ddd; border: none; padding: 0; height: 48px; 
+    border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.95rem; 
     width: 100%; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; 
     touch-action: manipulation; 
   }
   button:active { transform: scale(0.98); background: #444; }
   button.ghost { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
   button.ghost:active { background: var(--accent); color: #000; }
-  button.add-btn { margin-top: 8px; background: rgba(255,255,255,0.05); border: 1px dashed #555; color: #888; }
-  button.sm { width: auto; padding: 0 12px; min-width: 50px; font-size: 0.8rem; }
-  .del-btn { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; background: #333; color: #aaa; padding: 0; border-radius: 4px; font-size: 1rem; }
+  button.add-btn { margin-top: 10px; background: rgba(255,255,255,0.05); border: 1px dashed #555; color: #888; }
+  button.sm { width: auto; padding: 0 12px; min-width: 55px; font-size: 0.85rem; }
+  .del-btn { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; background: #333; color: #aaa; padding: 0; border-radius: 6px; font-size: 1.2rem; }
 
   .float-action { 
     position: fixed; bottom: 0; left: 0; width: 100%; 
@@ -101,7 +103,7 @@
   .float-action button.icon-only { background: #333; color: var(--text-sub); font-size: 1.4rem; height: 50px; }
   .float-action button.main { background: var(--accent); color: #000; font-weight: 700; height: 50px; }
 
-  /* === TIMER UI === */
+  /* === TIMER UI 針對 15 PM 優化 === */
   #timerBtn { 
     position: fixed; bottom: 100px; right: 20px; z-index: 99; width: 68px; height: 68px; 
     background: var(--card); border: 2px solid var(--accent); color: var(--accent); 
@@ -119,43 +121,60 @@
     
     touch-action: none; 
     overscroll-behavior: none;
-    overscroll-behavior-x: none;
-    user-select: none;
-    -webkit-user-select: none;
+    user-select: none; -webkit-user-select: none;
 
-    padding-top: calc(20px + env(safe-area-inset-top));
+    /* 大幅增加上方 padding，徹底避開靈動島 */
+    padding-top: calc(60px + env(safe-area-inset-top));
     padding-bottom: calc(40px + env(safe-area-inset-bottom));
   }
   #timerPanel.show { display: flex; opacity: 1; }
 
-  .dashboard-card { width: 100%; max-width: 400px; background: #1e1e1e; border: 1px solid #444; border-radius: 16px; padding: 30px 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; }
-  .timer-label { font-size: 0.9rem; color: var(--text-sub); letter-spacing: 2px; margin-bottom: 5px; }
-  .total-time { font-size: 1.5rem; color: #aaa; font-family: 'Roboto Mono'; margin-bottom: 15px; }
-  .main-time { font-size: 5rem; color: #fff; font-family: 'Roboto Mono'; font-weight: 300; line-height: 1; margin: 10px 0 30px 0; letter-spacing: -2px; }
+  .dashboard-card { 
+    width: 100%; max-width: 400px; background: #1e1e1e; border: 1px solid #444; 
+    border-radius: 16px; padding: 25px 20px; text-align: center; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; 
+  }
+  .timer-label { font-size: 0.85rem; color: var(--text-sub); letter-spacing: 2px; margin-bottom: 5px; }
+  .total-time { font-size: 1.3rem; color: #aaa; font-family: 'Roboto Mono'; margin-bottom: 15px; }
+  /* 縮小一點避免寬度超框 */
+  .main-time { font-size: 4.2rem; color: #fff; font-family: 'Roboto Mono'; font-weight: 300; line-height: 1; margin: 10px 0 20px 0; letter-spacing: -2px; }
   
-  .timer-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 400px; }
+  .timer-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 400px; margin-bottom: 20px; }
   .timer-controls button { 
-    padding: 0; font-size: 1.2rem; border-radius: 12px; 
-    height: 65px;
-    touch-action: manipulation;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    padding: 0; font-size: 1.2rem; border-radius: 12px; height: 60px;
+    touch-action: manipulation; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   }
   .btn-start { background: var(--accent); color: #0d2b0d; }
   .btn-pause { background: var(--warn); color: #3d0d0d; }
   .btn-secondary { background: #333; color: #ccc; }
   
-  .laps-wrapper { width: 100%; max-width: 400px; height: 30vh; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+  .laps-wrapper { width: 100%; max-width: 400px; flex: 1; max-height: 30vh; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
   .laps-header { background: #222; padding: 10px 20px; font-size: 0.85rem; color: #666; display: flex; justify-content: space-between; border-bottom: 1px solid #333; }
   .laps-list { overflow-y: auto; flex: 1; padding: 0; margin: 0; list-style: none; overscroll-behavior: contain; }
   .lap-row { display: flex; justify-content: space-between; padding: 12px 20px; font-family: 'Roboto Mono'; color: #aaa; border-bottom: 1px solid #222; font-size: 1rem; }
   .lap-row:nth-child(even) { background: #1e1e1e; }
   .lap-row:first-child { color: var(--text-main); font-weight: bold; background: rgba(107, 142, 35, 0.1); }
   
-  .close-timer-btn { position: absolute; top: calc(20px + env(safe-area-inset-top)); right: 20px; background: transparent; color: #666; width: auto; font-size: 0.9rem; padding: 10px; border: 1px solid #444; touch-action: manipulation; }
+  /* 確保關閉按鈕絕對安全 */
+  .close-timer-btn { 
+    position: absolute; top: calc(15px + env(safe-area-inset-top)); right: 20px; 
+    background: rgba(0,0,0,0.5); color: #aaa; width: auto; font-size: 0.95rem; 
+    padding: 0 15px; height: 40px; border: 1px solid #444; border-radius: 20px;
+    touch-action: manipulation; backdrop-filter: blur(5px);
+  }
 
-  #toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--accent); color: #000; padding: 15px 30px; font-weight: bold; border-radius: 4px; pointer-events: none; opacity: 0; transition: 0.2s; z-index: 1000; box-shadow: 0 0 20px rgba(0,255,195,0.4); }
+  /* === 進度條 UI === */
+  .prog-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .prog-row { display: flex; flex-direction: column; gap: 6px; }
+  .prog-label { display: flex; justify-content: space-between; font-size: 0.85rem; font-family: 'Roboto Mono'; color: var(--text-main); }
+  .prog-label.over { color: var(--warn); font-weight: bold; }
+  .prog-bar-bg { background: #2a2a2a; height: 10px; border-radius: 5px; overflow: hidden; position: relative; border: 1px solid #333; }
+  .prog-bar-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.4s ease, background-color 0.3s ease; }
+  .prog-bar-fill.over { background: var(--warn); }
+  .prog-empty { text-align: center; font-size: 0.85rem; color: var(--text-sub); padding: 10px 0; }
+
+  #toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--accent); color: #000; padding: 15px 30px; font-weight: bold; border-radius: 6px; pointer-events: none; opacity: 0; transition: 0.2s; z-index: 1000; box-shadow: 0 0 20px rgba(107,142,35,0.4); }
   #toast.show { opacity: 1; }
-  
   #copyArea { position: fixed; bottom: 0; left: 0; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
 </style>
 </head>
@@ -178,7 +197,6 @@
     <button class="btn-start" id="tAction" onclick="timerAct()">開始</button>
     <button class="btn-secondary" onclick="timerLapReset()" id="tLapReset">計圈</button>
   </div>
-  <div style="height:20px;"></div>
   <div class="laps-wrapper">
     <div class="laps-header"><span>圈數 (LAP)</span><span>時間 (TIME)</span></div>
     <ul class="laps-list" id="lapsList"></ul>
@@ -202,10 +220,17 @@
       <div><label>重訓開始</label><div class="time-field"><input type="time" id="wtStart" oninput="autoTimeRange()"><button class="ghost sm" onclick="setNow('wtStart')">現在</button></div></div>
       <div><label>重訓結束</label><div class="time-field"><input type="time" id="wtEnd" oninput="autoTimeRange()"><button class="ghost sm" onclick="setNow('wtEnd')">現在</button></div></div>
     </div>
-    <div style="text-align:right; color:var(--text-sub); font-size:0.8rem; margin-bottom:15px;" id="wtDur">持續時間: 0 分鐘</div>
+    <div style="text-align:right; color:var(--text-sub); font-size:0.85rem; margin-bottom:15px;" id="wtDur">持續時間: 0 分鐘</div>
     
     <div id="exerciseList"></div>
     <button class="add-btn" onclick="addExercise()">[+] 新增動作</button>
+  </section>
+
+  <section id="progressSection">
+    <h2>訓練進度表 <small>PROGRESS</small></h2>
+    <div class="prog-grid" id="progressContainer">
+      <div class="prog-empty">尚未新增重訓組數</div>
+    </div>
   </section>
 
   <section>
@@ -244,20 +269,20 @@
 <template id="equipment-options">
   <option value="">— 選擇器材 —</option>
   <optgroup label="胸部 (Chest)">
-    <option>蝴蝶機（夾胸）</option>
+    <option>蝴蝶機（夾胸）</option><option>臥推</option><option>交叉夾胸</option>
   </optgroup>
   <optgroup label="背部 (Back)">
-    <option>蝴蝶機（反面背飛）</option><option>分離式坐姿划船機．雙手</option><option>分離式坐姿划船機．左手</option><option>分離式坐姿划船機．右手</option><option>分離式坐姿划船機．左右手交替</option>
+    <option>蝴蝶機（反面背飛）</option><option>分離式坐姿划船機．雙手</option><option>分離式坐姿划船機．左手</option><option>分離式坐姿划船機．右手</option><option>分離式坐姿划船機．左右交替</option>
     <option>坐姿划船機</option><option>高位下拉（寬距）</option><option>高位下拉（窄距）</option><option>高位下拉（窄距反握）</option><option>高位下拉（W把手）</option><option>高位下拉（V把手）</option>
   </optgroup>
   <optgroup label="肩部 (Shoulders)">
-    <option>機械肩推</option><option>機械側平舉</option>
+    <option>機械肩推</option><option>機械側平舉</option><option>肩推</option><option>側平舉</option>
   </optgroup>
   <optgroup label="手臂 (Arms)">
-    <option>機械二頭彎舉</option><option>過頭三頭肌伸展</option>
+    <option>機械二頭彎舉</option><option>過頭三頭肌伸展</option><option>啞鈴過頭三頭伸展</option>
   </optgroup>
   <optgroup label="下半身 (Legs)">
-    <option>腿部倒推蹬機．上寬外八</option> <option>腿部倒推蹬機．上窄外八</option> <option>腿部倒推蹬機．下寬外八</option> <option>腿部倒推蹬機．下窄外八</option><option>腿部推蹬機．水平</option>
+    <option>腿部倒推蹬機（上寬外八）</option> <option>腿部倒推蹬機（上窄外八）</option> <option>腿部倒推蹬機（下寬外八）</option> <option>腿部倒推蹬機（下窄外八）</option><option>腿部推蹬機．水平</option>
     <option>坐姿勾腿機</option><option>俯臥勾腿機</option><option>夾腿機</option><option>開腿機</option><option>Hack Squat 哈克深蹲</option>
   </optgroup>
   <optgroup label="核心與下背 (Core & Lower Back)">
@@ -272,6 +297,7 @@
     <option>划船</option>
     <option>下壓</option>
     <option>直臂下壓</option>
+    <option>坐直臂下壓</option>
     <option>二頭彎舉</option>
     <option>木斧</option>
     <option>面拉</option>
@@ -295,32 +321,109 @@ const pad = n => String(n).padStart(2, '0');
 let tInt = null, totalStartTime = 0, lapStartTime = 0, tTotalElapsed = 0, laps = [];
 let lapPausedTime = 0;
 
-function autoTimeRange() {
-    const times = [ val('#wtStart'), val('#wtEnd'), val('#caStart'), val('#caEnd') ].filter(t => t !== ""); 
-    if (times.length < 2 && !val('#stretch')) return;
+/* === 新增：Enter 鍵自動跳轉下一欄位 === */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    // 抓取所有可以 focus 的元素
+    const focusable = Array.from(document.querySelectorAll('input:not([type="hidden"]), select, textarea, button:not([disabled])'))
+      .filter(el => el.tabIndex >= 0 && !el.classList.contains('del-btn') && el.offsetParent !== null);
     
-    times.sort();
-    let startTime = times[0] || '';
-    let endTime = times[times.length - 1] || '';
-
-    const stretchMin = parseInt(val('#stretch')) || 0;
-    if (stretchMin > 0 && endTime) {
-        const [h, m] = endTime.split(':').map(Number);
-        const date = new Date(); 
-        date.setHours(h, m + stretchMin);
-        endTime = `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    const index = focusable.indexOf(document.activeElement);
+    if (index > -1 && index < focusable.length - 1) {
+      e.preventDefault(); // 阻止預設換行（textarea 還是可以靠 shift+enter 或其他方式，但這裡統一跳轉最順手）
+      focusable[index + 1].focus();
     }
+  }
+});
 
-    if(startTime && endTime) set('#timeRange', `${startTime} - ${endTime}`);
+/* === 新增：肌群自動辨識與進度條渲染 === */
+function detectMuscleGroup(name) {
+  if (!name) return null;
+  // 依照器材名稱關鍵字判斷
+  if (/胸|蝴蝶機（夾胸）|臥推|飛鳥/.test(name)) return "胸部";
+  if (/背|划船|下拉|面拉|反向飛鳥|直臂下壓/.test(name)) return "背部";
+  if (/肩|側平舉/.test(name)) return "肩部";
+  if (/二頭|三頭|手臂|下壓|伸展/.test(name) && !name.includes('背伸展')) return "手臂";
+  if (/腿|深蹲|推蹬/.test(name)) return "下半身";
+  if (/腹|軀幹|木斧/.test(name)) return "核心";
+  return "其他";
+}
+
+function updateProgress() {
+  const counts = { "胸部": 0, "背部": 0, "肩部": 0, "手臂": 0, "下半身": 0, "核心": 0, "其他": 0 };
+  let totalSets = 0;
+
+  getAll('#exerciseList .item-row').forEach(r => {
+    const name = getName(r);
+    const sets = parseInt(v(r, '.s')) || 0;
+    const muscle = detectMuscleGroup(name);
+    if (muscle) {
+      counts[muscle] += sets;
+      totalSets += sets;
+    }
+  });
+
+  const pCont = document.getElementById('progressContainer');
+  if (totalSets === 0) {
+    pCont.innerHTML = '<div class="prog-empty">尚未新增重訓組數</div>';
+    return;
+  }
+
+  // 16組為達標紅線
+  const html = Object.keys(counts)
+    .filter(k => counts[k] > 0 && k !== "其他") // 隱藏沒練的與無法分類的
+    .map(k => {
+      const sets = counts[k];
+      const isOver = sets >= 16;
+      const pct = Math.min(100, (sets / 16) * 100);
+      const colorClass = isOver ? 'over' : '';
+      return `
+      <div class="prog-row">
+          <div class="prog-label ${colorClass}">
+            <span>${k}</span>
+            <span>${sets} / 16 組</span>
+          </div>
+          <div class="prog-bar-bg">
+            <div class="prog-bar-fill ${colorClass}" style="width:${pct}%"></div>
+          </div>
+      </div>`;
+    }).join('');
+  
+  pCont.innerHTML = html || '<div class="prog-empty">無有效分類數據</div>';
+}
+
+function autoTimeRange() {
+  const times = [ val('#wtStart'), val('#wtEnd'), val('#caStart'), val('#caEnd') ].filter(t => t !== ""); 
+  if (times.length < 2 && !val('#stretch')) return;
+  
+  times.sort();
+  let startTime = times[0] || '';
+  let endTime = times[times.length - 1] || '';
+
+  const stretchMin = parseInt(val('#stretch')) || 0;
+  if (stretchMin > 0 && endTime) {
+      const [h, m] = endTime.split(':').map(Number);
+      const date = new Date(); 
+      date.setHours(h, m + stretchMin);
+      endTime = `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
+
+  if(startTime && endTime) set('#timeRange', `${startTime} - ${endTime}`);
 }
 
 function createRow(tid, ph, vals={}) {
   const div=document.createElement('div'); div.className='item-row';
   const sel=document.createElement('select'); sel.innerHTML=document.getElementById(tid).innerHTML;
   const cust=document.createElement('input'); cust.type='text'; cust.className='custom-input'; cust.placeholder=ph;
-  const del=document.createElement('button'); del.innerHTML='✕'; del.className='del-btn'; del.onclick=()=>div.remove();
+  const del=document.createElement('button'); del.innerHTML='✕'; del.className='del-btn'; del.tabIndex=-1;
   
-  sel.onchange=()=>{if(sel.value==='__custom__'){cust.classList.add('show');cust.focus();}else{cust.classList.remove('show');}};
+  del.onclick=()=>{ div.remove(); updateProgress(); save(true); };
+  sel.onchange=()=>{
+    if(sel.value==='__custom__'){cust.classList.add('show');cust.focus();}else{cust.classList.remove('show');}
+    updateProgress(); save(true);
+  };
+  cust.oninput=()=>{ updateProgress(); };
+
   if(vals.n){ if([...sel.options].some(o=>o.value===vals.n))sel.value=vals.n; else{sel.value='__custom__';cust.classList.add('show');cust.value=vals.n;} }
   div.append(del,sel,cust); return {div,sel,cust};
 }
@@ -328,8 +431,10 @@ function createRow(tid, ph, vals={}) {
 function addExercise(d={}) {
   const {div}=createRow('equipment-options','器材名稱',d);
   const c=document.createElement('div'); c.className='item-controls';
-  c.innerHTML=`<input type="number" class="s" placeholder="組" value="${d.s||''}"><input type="number" class="r" placeholder="次" value="${d.r||''}"><input type="number" class="w" placeholder="kg" value="${d.w||''}"><input type="number" class="rt" placeholder="休(s)" value="${d.rt||''}">`;
+  // 綁定 oninput 到組數，即時更新進度條
+  c.innerHTML=`<input type="number" class="s" placeholder="組" value="${d.s||''}" oninput="updateProgress();"><input type="number" class="r" placeholder="次" value="${d.r||''}"><input type="number" class="w" placeholder="kg" value="${d.w||''}"><input type="number" class="rt" placeholder="休(s)" value="${d.rt||''}">`;
   div.append(c); document.getElementById('exerciseList').append(div);
+  updateProgress();
 }
 function addCardio(d={}) {
   const {div}=createRow('cardio-options','有氧項目',d);
@@ -357,7 +462,7 @@ function save(silent=true) {
 function load() {
   const raw=localStorage.getItem(KEY);
   if(!raw) { 
-      initDate(); addExercise(); return; 
+      initDate(); addExercise(); updateProgress(); return; 
   }
   const d=JSON.parse(raw);
   if(d.dateVal) set('#dateVal', d.dateVal); else initDate();
@@ -382,7 +487,7 @@ function load() {
         updT(lapPausedTime, tTotalElapsed); 
     }
   }
-  calcTime(); calcWater();
+  calcTime(); calcWater(); updateProgress();
 }
 
 function initDate() {
@@ -471,6 +576,7 @@ function forceReset() {
     updT(0,0); 
     document.getElementById('lapsList').innerHTML='';
     initDate();
+    updateProgress();
     setTimeout(() => location.reload(), 100);
   }
 }
