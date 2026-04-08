@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>ZOÉ fitness plan V1</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  /* === ESPORTS THEME V30 (STYLE UNTOUCHED) === */
+  :root {
+    --bg: #121212;
+    --card: #1e1e1e;
+    --border: #333333;
+    --text-main: #e0e0e0;
+    --text-sub: #888888;
+    --accent: #6b8e23; /* Military Green */
+    --warn: #a63737;    /* Brick Red */
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Roboto Mono', monospace;
+    margin: 0; padding: 1rem; 
+    padding-bottom: 220px; 
+    padding-top: env(safe-area-inset-top);
+    background-color: var(--bg); color: var(--text-main); 
+    display: flex; justify-content: center;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  }
+  body.lock-scroll { overflow: hidden; }
+
+  .shell { width: 100%; max-width: 600px; }
+
+  h1 { 
+    font-size: 1.6rem; text-align: center; margin: 10px 0 1.5rem; 
+    letter-spacing: 2px; color: var(--text-sub); font-weight: 700;
+    border-bottom: 2px solid var(--accent); display: block; width: 100%; padding-bottom: 10px;
+    line-height: 1.3;
+  }
+  
+  section {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    margin-bottom: 1.2rem; padding: 1.2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  }
+  
+  h2 { 
+    font-size: 0.95rem; margin: 0 0 15px 0; display: flex; justify-content: space-between; align-items: center;
+    color: var(--text-main); font-weight: 600; border-left: 4px solid var(--accent); padding-left: 12px; letter-spacing: 1px;
+  }
+  h2 small { font-size: 0.75rem; color: var(--text-sub); font-weight: 400; }
+
+  label { 
+    display: block; font-size: 0.75rem; color: var(--text-sub); margin-bottom: 5px; 
+    font-family: 'Roboto Mono'; 
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+  }
+  .sub-label { font-size: 0.85rem; color: var(--accent); margin-top: 20px; margin-bottom: 8px; display:block; font-weight:bold; border-bottom: 1px dashed #333; padding-bottom: 4px; }
+
+  input, select, textarea {
+    width: 100%; background: #181818; border: 1px solid #444; color: var(--text-main);
+    padding: 0 10px; height: 45px; line-height: 45px;
+    font-size: 15px; margin-bottom: 5px; border-radius: 4px; transition: 0.2s; font-family: 'Roboto Mono';
+    appearance: none; -webkit-appearance: none;
+    min-width: 0;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); background: #222; }
+  input[type="date"], input[type="time"] { display: flex; align-items: center; padding-top: 2px; }
+  textarea { height: auto; min-height: 80px; padding: 10px; line-height: 1.5; }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .time-field { display: flex; gap: 5px; }
+  
+  .item-row { background: #252525; padding: 10px; margin-bottom: 10px; border-radius: 6px; border-left: 3px solid var(--border); position: relative; }
+  .item-controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 8px; }
+  .item-controls input { text-align: center; padding: 0; height: 38px; font-size: 0.9rem; }
+  .custom-input { display: none; border-color: var(--accent); margin-top:5px; }
+  .custom-input.show { display: block; }
+
+  button { 
+    background: #333; color: #ddd; border: none; padding: 0; height: 45px; 
+    border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem; 
+    width: 100%; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; 
+    touch-action: manipulation; 
+  }
+  button:active { transform: scale(0.98); background: #444; }
+  button.ghost { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+  button.ghost:active { background: var(--accent); color: #000; }
+  button.add-btn { margin-top: 8px; background: rgba(255,255,255,0.05); border: 1px dashed #555; color: #888; }
+  button.sm { width: auto; padding: 0 12px; min-width: 50px; font-size: 0.8rem; }
+  .del-btn { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; background: #333; color: #aaa; padding: 0; border-radius: 4px; font-size: 1rem; }
+
+  .float-action { 
+    position: fixed; bottom: 0; left: 0; width: 100%; 
+    background: rgba(25, 25, 25, 0.95); backdrop-filter: blur(20px); 
+    padding: 15px 20px; border-top: 1px solid #444; 
+    padding-bottom: calc(15px + env(safe-area-inset-bottom));
+    display: grid; grid-template-columns: 60px 1fr 1fr; gap: 12px; z-index: 90; 
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
+  }
+  .float-action button.icon-only { background: #333; color: var(--text-sub); font-size: 1.4rem; height: 50px; }
+  .float-action button.main { background: var(--accent); color: #000; font-weight: 700; height: 50px; }
+
+  /* === TIMER UI === */
+  #timerBtn { 
+    position: fixed; bottom: 100px; right: 20px; z-index: 99; width: 68px; height: 68px; 
+    background: var(--card); border: 2px solid var(--accent); color: var(--accent); 
+    display: flex; align-items: center; justify-content: center; 
+    font-size: 22px; font-weight: 700; border-radius: 50%; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-family: 'Roboto Mono'; 
+    touch-action: manipulation;
+  }
+
+  #timerPanel { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(18, 18, 18, 0.98); backdrop-filter: blur(10px); 
+    z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; 
+    padding: 20px; opacity: 0; transition: opacity 0.2s; 
+    
+    touch-action: none; 
+    overscroll-behavior: none;
+    overscroll-behavior-x: none;
+    user-select: none;
+    -webkit-user-select: none;
+
+    padding-top: calc(20px + env(safe-area-inset-top));
+    padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  }
+  #timerPanel.show { display: flex; opacity: 1; }
+
+  .dashboard-card { width: 100%; max-width: 400px; background: #1e1e1e; border: 1px solid #444; border-radius: 16px; padding: 30px 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; }
+  .timer-label { font-size: 0.9rem; color: var(--text-sub); letter-spacing: 2px; margin-bottom: 5px; }
+  .total-time { font-size: 1.5rem; color: #aaa; font-family: 'Roboto Mono'; margin-bottom: 15px; }
+  .main-time { font-size: 5rem; color: #fff; font-family: 'Roboto Mono'; font-weight: 300; line-height: 1; margin: 10px 0 30px 0; letter-spacing: -2px; }
+  
+  .timer-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 400px; }
+  .timer-controls button { 
+    padding: 0; font-size: 1.2rem; border-radius: 12px; 
+    height: 65px;
+    touch-action: manipulation;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
+  .btn-start { background: var(--accent); color: #0d2b0d; }
+  .btn-pause { background: var(--warn); color: #3d0d0d; }
+  .btn-secondary { background: #333; color: #ccc; }
+  
+  .laps-wrapper { width: 100%; max-width: 400px; height: 30vh; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+  .laps-header { background: #222; padding: 10px 20px; font-size: 0.85rem; color: #666; display: flex; justify-content: space-between; border-bottom: 1px solid #333; }
+  .laps-list { overflow-y: auto; flex: 1; padding: 0; margin: 0; list-style: none; overscroll-behavior: contain; }
+  .lap-row { display: flex; justify-content: space-between; padding: 12px 20px; font-family: 'Roboto Mono'; color: #aaa; border-bottom: 1px solid #222; font-size: 1rem; }
+  .lap-row:nth-child(even) { background: #1e1e1e; }
+  .lap-row:first-child { color: var(--text-main); font-weight: bold; background: rgba(107, 142, 35, 0.1); }
+  
+  .close-timer-btn { position: absolute; top: calc(20px + env(safe-area-inset-top)); right: 20px; background: transparent; color: #666; width: auto; font-size: 0.9rem; padding: 10px; border: 1px solid #444; touch-action: manipulation; }
+
+  #toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--accent); color: #000; padding: 15px 30px; font-weight: bold; border-radius: 4px; pointer-events: none; opacity: 0; transition: 0.2s; z-index: 1000; box-shadow: 0 0 20px rgba(0,255,195,0.4); }
+  #toast.show { opacity: 1; }
+  
+  #copyArea { position: fixed; bottom: 0; left: 0; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
+</style>
+</head>
+<body>
+
+<div id="toast">✅ 已存檔</div>
+
+<div id="timerBtn" onclick="toggleTimer()">00</div>
+
+<div id="timerPanel">
+  <button class="close-timer-btn" onclick="toggleTimer()">✕ 縮小</button>
+  <div class="dashboard-card">
+    <div class="timer-label">TOTAL TIME 總時長</div>
+    <div class="total-time" id="tTotal">00:00.00</div>
+    <div style="height:1px; background:#333; margin:10px 20px;"></div>
+    <div class="timer-label" style="margin-top:15px; color:var(--accent);">CURRENT LAP 分段</div>
+    <div class="main-time" id="tVal">00:00</div>
+  </div>
+  <div class="timer-controls">
+    <button class="btn-start" id="tAction" onclick="timerAct()">開始</button>
+    <button class="btn-secondary" onclick="timerLapReset()" id="tLapReset">計圈</button>
+  </div>
+  <div style="height:20px;"></div>
+  <div class="laps-wrapper">
+    <div class="laps-header"><span>圈數 (LAP)</span><span>時間 (TIME)</span></div>
+    <ul class="laps-list" id="lapsList"></ul>
+  </div>
+</div>
+
+<div class="shell">
+  <h1>ZOÉ fitness plan V1</h1>
+
+  <section>
+    <h2>日期與時段 <small>DATE & RANGE</small></h2>
+    <div class="row">
+        <div><label>日期 (Date)</label><input type="date" id="dateVal"></div>
+        <div><label>總區間 (RANGE)</label><input type="text" id="timeRange" placeholder="例 19:00 - 21:00"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>重訓 <small>RESISTANCE</small></h2>
+    <div class="row">
+      <div><label>重訓開始</label><div class="time-field"><input type="time" id="wtStart" oninput="autoTimeRange()"><button class="ghost sm" onclick="setNow('wtStart')">現在</button></div></div>
+      <div><label>重訓結束</label><div class="time-field"><input type="time" id="wtEnd" oninput="autoTimeRange()"><button class="ghost sm" onclick="setNow('wtEnd')">現在</button></div></div>
+    </div>
+    <div style="text-align:right; color:var(--text-sub); font-size:0.8rem; margin-bottom:15px;" id="wtDur">持續時間: 0 分鐘</div>
+    
+    <div id="exerciseList"></div>
+    <button class="add-btn" onclick="addExercise()">[+] 新增動作</button>
+  </section>
+
+  <section>
+    <h2>有氧 <small>CARDIO</small></h2>
+    <div class="row" style="margin-bottom:15px; border-bottom:1px dashed #333; padding-bottom:15px;">
+       <div><label>有氧開始</label><div class="time-field"><input type="time" id="caStart" oninput="autoTimeRange()"><button class="ghost sm" onclick="setNow('caStart')">現在</button></div></div>
+       <div><label>有氧結束</label><div class="time-field"><input type="time" id="caEnd" oninput="autoTimeRange()"><button class="ghost sm" onclick="setNow('caEnd')">現在</button></div></div>
+    </div>
+    <div id="cardioList"></div>
+    <button class="add-btn" onclick="addCardio()">[+] 新增有氧</button>
+    <div style="margin-top:15px;"><label>伸展時間 (分鐘)</label><input type="number" id="stretch" placeholder="例如: 15" oninput="autoTimeRange()"></div>
+  </section>
+
+  <section>
+    <h2>飲水紀錄 <small>HYDRATION</small></h2>
+    <div class="row">
+        <div><label>運動飲水 (ML)</label><input type="number" id="wWork" placeholder="例如: 500" oninput="calcWater()"></div>
+        <div><label>日常飲水 (ML)</label><input type="number" id="wDay" placeholder="例如: 1500" oninput="calcWater()"></div>
+    </div>
+    <div style="text-align:right; color:var(--accent); font-size:0.95rem; font-weight:bold;" id="wTotal">總計: 0 ML</div>
+  </section>
+
+  <section>
+    <h2>備註 <small>NOTES</small></h2>
+    <textarea id="note" placeholder="紀錄今日身體狀況..."></textarea>
+  </section>
+</div>
+
+<div class="float-action">
+  <button class="icon-only" onclick="forceReset()">🗑️</button>
+  <button class="ghost" onclick="genText()">📋 複製日誌</button>
+  <button class="main" onclick="manualSave()">💾 手動存檔</button>
+</div>
+<textarea id="copyArea"></textarea>
+
+<template id="equipment-options">
+  <option value="">— 選擇器材 —</option>
+  <optgroup label="胸部 (Chest)">
+    <option>蝴蝶機（夾胸）</option>
+  </optgroup>
+  <optgroup label="背部 (Back)">
+    <option>蝴蝶機（反面背飛）</option><option>分離式坐姿划船機．雙手</option><option>分離式坐姿划船機．左手</option><option>分離式坐姿划船機．右手</option><option>分離式坐姿划船機．左右手交替</option>
+    <option>坐姿划船機</option><option>高位下拉（寬距）</option><option>高位下拉（窄距）</option><option>高位下拉（窄距反握）</option><option>高位下拉（W把手）</option><option>高位下拉（V把手）</option>
+  </optgroup>
+  <optgroup label="肩部 (Shoulders)">
+    <option>機械肩推</option><option>機械側平舉</option>
+  </optgroup>
+  <optgroup label="手臂 (Arms)">
+    <option>機械二頭彎舉</option><option>過頭三頭肌伸展</option>
+  </optgroup>
+  <optgroup label="下半身 (Legs)">
+    <option>腿部倒推蹬機．上寬外八</option> <option>腿部倒推蹬機．上窄外八</option> <option>腿部倒推蹬機．下寬外八</option> <option>腿部倒推蹬機．下窄外八</option><option>腿部推蹬機．水平</option>
+    <option>坐姿勾腿機</option><option>俯臥勾腿機</option><option>夾腿機</option><option>開腿機</option><option>Hack Squat 哈克深蹲</option>
+  </optgroup>
+  <optgroup label="核心與下背 (Core & Lower Back)">
+    <option>下背訓練機</option><option>45° 下背伸展機</option><option>卷腹機</option><option>旋轉軀幹機．左</option><option>旋轉軀幹機．右</option>
+  </optgroup>
+  <optgroup label="繩索訓練 (Cable)">
+    <option>胸前交叉</option>
+    <option>站立滑輪下拉</option>
+    <option>繩索側平舉</option>
+    <option>單手反向飛鳥 左</option>
+    <option>單手反向飛鳥 右</option>
+    <option>划船</option>
+    <option>下壓</option>
+    <option>直臂下壓</option>
+    <option>二頭彎舉</option>
+    <option>木斧</option>
+    <option>面拉</option>
+  </optgroup>
+  <option value="__custom__">自訂...</option>
+</template>
+
+<template id="cardio-options">
+  <option value="">— 選擇項目 —</option>
+  <option>滑步機</option><option>階梯機</option><option>踏步機</option><option>躺式腳踏車</option><option>直立腳踏車</option><option>跑步機</option>
+  <option value="__custom__">自訂...</option>
+</template>
+
+<script>
+const KEY = 'ZOE_FITNESS_V1_DATA';
+const val = s => document.querySelector(s)?.value || '';
+const set = (s, v) => { const e = document.querySelector(s); if(e) e.value = v || ''; };
+const getAll = s => [...document.querySelectorAll(s)];
+const pad = n => String(n).padStart(2, '0');
+
+let tInt = null, totalStartTime = 0, lapStartTime = 0, tTotalElapsed = 0, laps = [];
+let lapPausedTime = 0;
+
+function autoTimeRange() {
+    const times = [ val('#wtStart'), val('#wtEnd'), val('#caStart'), val('#caEnd') ].filter(t => t !== ""); 
+    if (times.length < 2 && !val('#stretch')) return;
+    
+    times.sort();
+    let startTime = times[0] || '';
+    let endTime = times[times.length - 1] || '';
+
+    const stretchMin = parseInt(val('#stretch')) || 0;
+    if (stretchMin > 0 && endTime) {
+        const [h, m] = endTime.split(':').map(Number);
+        const date = new Date(); 
+        date.setHours(h, m + stretchMin);
+        endTime = `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    if(startTime && endTime) set('#timeRange', `${startTime} - ${endTime}`);
+}
+
+function createRow(tid, ph, vals={}) {
+  const div=document.createElement('div'); div.className='item-row';
+  const sel=document.createElement('select'); sel.innerHTML=document.getElementById(tid).innerHTML;
+  const cust=document.createElement('input'); cust.type='text'; cust.className='custom-input'; cust.placeholder=ph;
+  const del=document.createElement('button'); del.innerHTML='✕'; del.className='del-btn'; del.onclick=()=>div.remove();
+  
+  sel.onchange=()=>{if(sel.value==='__custom__'){cust.classList.add('show');cust.focus();}else{cust.classList.remove('show');}};
+  if(vals.n){ if([...sel.options].some(o=>o.value===vals.n))sel.value=vals.n; else{sel.value='__custom__';cust.classList.add('show');cust.value=vals.n;} }
+  div.append(del,sel,cust); return {div,sel,cust};
+}
+
+function addExercise(d={}) {
+  const {div}=createRow('equipment-options','器材名稱',d);
+  const c=document.createElement('div'); c.className='item-controls';
+  c.innerHTML=`<input type="number" class="s" placeholder="組" value="${d.s||''}"><input type="number" class="r" placeholder="次" value="${d.r||''}"><input type="number" class="w" placeholder="kg" value="${d.w||''}"><input type="number" class="rt" placeholder="休(s)" value="${d.rt||''}">`;
+  div.append(c); document.getElementById('exerciseList').append(div);
+}
+function addCardio(d={}) {
+  const {div}=createRow('cardio-options','有氧項目',d);
+  const c=document.createElement('div'); c.className='item-controls'; c.style.gridTemplateColumns="1fr 1fr 1fr";
+  c.innerHTML=`<input type="number" class="dur" placeholder="分" value="${d.dur||''}"><input type="number" class="lv" placeholder="Lv" value="${d.lv||''}"><input type="number" class="bpm" placeholder="心率" value="${d.bpm||''}">`;
+  div.append(c); document.getElementById('cardioList').append(div);
+}
+
+function getName(r){const s=r.querySelector('select'),c=r.querySelector('.custom-input');return s.value==='__custom__'?c.value:s.value;}
+function v(p,s){return p.querySelector(s)?.value||'';}
+
+// Save/Load
+function save(silent=true) {
+  const d={
+    dateVal: val('#dateVal'), timeRange: val('#timeRange'),
+    wtStart:val('#wtStart'), wtEnd:val('#wtEnd'), caStart:val('#caStart'), caEnd:val('#caEnd'), stretch:val('#stretch'), wWork:val('#wWork'), wDay:val('#wDay'), note:val('#note'),
+    exs: getAll('#exerciseList .item-row').map(r=>({n:getName(r),s:v(r,'.s'),r:v(r,'.r'),w:v(r,'.w'),rt:v(r,'.rt')})),
+    cardios: getAll('#cardioList .item-row').map(r=>({n:getName(r),dur:v(r,'.dur'),lv:v(r,'.lv'),bpm:v(r,'.bpm')})),
+    timer: {totalStart:totalStartTime, lapStart:lapStartTime, totalElapsed:tTotalElapsed, running:!!tInt, laps:laps, lapPausedTime: lapPausedTime}
+  };
+  localStorage.setItem(KEY,JSON.stringify(d));
+  if(!silent){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1000);}
+}
+
+function load() {
+  const raw=localStorage.getItem(KEY);
+  if(!raw) { 
+      initDate(); addExercise(); return; 
+  }
+  const d=JSON.parse(raw);
+  if(d.dateVal) set('#dateVal', d.dateVal); else initDate();
+  set('#timeRange', d.timeRange);
+  set('#wtStart',d.wtStart); set('#wtEnd',d.wtEnd); set('#caStart',d.caStart); set('#caEnd',d.caEnd); 
+  set('#stretch',d.stretch); set('#wWork',d.wWork); set('#wDay',d.wDay); set('#note',d.note);
+  
+  document.getElementById('exerciseList').innerHTML=''; if(d.exs)d.exs.forEach(x=>addExercise(x));
+  document.getElementById('cardioList').innerHTML=''; if(d.cardios)d.cardios.forEach(x=>addCardio(x));
+  
+  if(d.timer) { 
+    tTotalElapsed = d.timer.totalElapsed || 0; 
+    laps = d.timer.laps || []; 
+    lapPausedTime = d.timer.lapPausedTime || 0;
+    renderLaps();
+    if(d.timer.running) { 
+        totalStartTime = d.timer.totalStart; 
+        lapStart = d.timer.lapStart; 
+        startT(); 
+    } 
+    else { 
+        updT(lapPausedTime, tTotalElapsed); 
+    }
+  }
+  calcTime(); calcWater();
+}
+
+function initDate() {
+    const local = new Date();
+    local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
+    document.getElementById('dateVal').value = local.toISOString().slice(0,10);
+}
+
+function fmtT(ms, showMs=true) { 
+    const m = Math.floor(ms/60000); const s = Math.floor((ms%60000)/1000);
+    if(!showMs) return `${pad(m)}:${pad(s)}`;
+    const cs = Math.floor((ms%1000)/10);
+    return `${pad(m)}:${pad(s)}.${pad(cs)}`;
+}
+function updT(lapMs, totalMs) {
+  document.getElementById('tVal').innerText = fmtT(lapMs, false); 
+  document.getElementById('tTotal').innerText = fmtT(totalMs); 
+  document.getElementById('timerBtn').innerText = String(Math.floor((lapMs%60000)/1000)).padStart(2,'0');
+}
+function startT() {
+  const btn = document.getElementById('tAction'); btn.innerText = "暫停"; btn.className = "btn-pause"; document.getElementById('tLapReset').innerText = "計圈"; 
+  tInt = setInterval(() => { 
+      const now = Date.now(); 
+      updT(now - lapStartTime, tTotalElapsed + (now - totalStartTime)); 
+  }, 50);
+}
+function timerAct() {
+  if(tInt) { 
+      clearInterval(tInt); tInt = null; 
+      const now = Date.now();
+      tTotalElapsed += now - totalStartTime; 
+      lapPausedTime = now - lapStartTime;    
+      
+      document.getElementById('tAction').innerText = "繼續"; document.getElementById('tAction').className = "btn-start"; document.getElementById('tLapReset').innerText = "重置"; save(true); 
+  }
+  else { 
+      const now = Date.now();
+      if(totalStartTime === 0 || document.getElementById('tAction').innerText === "開始") { 
+          totalStartTime = now; 
+          lapStartTime = now; 
+          tTotalElapsed = 0; 
+          lapPausedTime = 0;
+          laps = []; renderLaps(); 
+      } else { 
+          totalStartTime = now; 
+          lapStartTime = now - lapPausedTime; 
+      } 
+      startT(); 
+  }
+}
+
+function timerLapReset() {
+  if(tInt) { 
+      const now = Date.now();
+      laps.unshift(now - lapStartTime); renderLaps(); 
+      lapStartTime = now; 
+  } 
+  else { 
+      tTotalElapsed = 0; totalStartTime = 0; lapStartTime = 0; lapPausedTime = 0; laps = []; 
+      updT(0, 0); 
+      document.getElementById('lapsList').innerHTML=''; 
+      document.getElementById('tAction').innerText="開始"; document.getElementById('tAction').className="btn-start"; document.getElementById('tLapReset').innerText="計圈"; 
+      save(true); 
+  }
+}
+function renderLaps() { document.getElementById('lapsList').innerHTML = laps.map((t,i) => `<li class="lap-row"><span>圈 ${laps.length-i}</span><span>${fmtT(t)}</span></li>`).join(''); }
+
+function toggleTimer() { 
+    const p = document.getElementById('timerPanel');
+    const b = document.body;
+    p.classList.toggle('show'); 
+    if(p.classList.contains('show')) { b.classList.add('lock-scroll'); } else { b.classList.remove('lock-scroll'); }
+}
+
+function forceReset() {
+  if(confirm('⚠️ 確定要清空並開始新的一天嗎？\n(目前的紀錄將被清除)')) {
+    localStorage.removeItem(KEY);
+    document.querySelectorAll('input').forEach(el => el.value = '');
+    document.querySelectorAll('textarea').forEach(el => el.value = '');
+    document.getElementById('exerciseList').innerHTML = '';
+    document.getElementById('cardioList').innerHTML = '';
+    document.getElementById('wtDur').innerText = '持續時間: 0 分鐘';
+    document.getElementById('wTotal').innerText = '總計: 0 ML';
+    if(tInt) clearInterval(tInt);
+    tInt=null; totalStartTime=0; lapStartTime=0; tTotalElapsed=0; laps=[]; lapPausedTime=0;
+    updT(0,0); 
+    document.getElementById('lapsList').innerHTML='';
+    initDate();
+    setTimeout(() => location.reload(), 100);
+  }
+}
+
+async function genText() {
+  save(true); const d=JSON.parse(localStorage.getItem(KEY)); 
+  const dateStr = d.dateVal ? d.dateVal.replace(/-/g, '/') : new Date().toLocaleDateString();
+  let t=`📅 ${dateStr} 訓練日誌\n──────────────────\n`;
+  
+  const timeShow = d.timeRange ? d.timeRange : (d.wtStart && d.wtEnd ? `${d.wtStart} - ${d.wtEnd}` : '');
+  if(timeShow) t += `⏰ 時間: ${timeShow}\n`;
+  
+  const validExs = d.exs.filter(x => x.n);
+  if(validExs.length > 0) { 
+    t += `\n🏋️ 重訓項目\n`; 
+    validExs.forEach(x => {
+      let details = [];
+      if(x.s && x.r) details.push(`${x.s}組×${x.r}次`);
+      else if(x.s) details.push(`${x.s}組`);
+      else if(x.r) details.push(`${x.r}次`);
+
+      if(x.w) details.push(`${x.w}kg`);
+      if(x.rt) details.push(`休${x.rt}s`);
+
+      let detailStr = details.length > 0 ? `｜${details.join('｜')}` : '';
+      t += `• ${x.n}${detailStr}\n`;
+    }); 
+  }
+  
+  const validCardios = d.cardios.filter(x => x.n);
+  if(validCardios.length > 0 || val('#caStart') || val('#stretch')) { 
+    t += `\n🏃 有氧與伸展\n`; 
+    validCardios.forEach(x => {
+      let details = [];
+      if(x.dur) details.push(`${x.dur}分`);
+      let subDetails = [];
+      if(x.lv) subDetails.push(`Lv.${x.lv}`);
+      if(x.bpm) subDetails.push(`${x.bpm}bpm`);
+      if(subDetails.length > 0) details.push(`(${subDetails.join('/')})`);
+
+      let detailStr = details.length > 0 ? `｜${details.join(' ')}` : '';
+      t += `• ${x.n}${detailStr}\n`;
+    }); 
+    if(val('#stretch')) t += `• 伸展: ${val('#stretch')} 分鐘\n`; 
+  }
+  
+  const waterTotal = (Number(d.wWork)||0) + (Number(d.wDay)||0);
+  if(waterTotal > 0) {
+    t += `\n💧 飲水總計: ${waterTotal} ML\n`;
+  }
+  
+  if(d.note) t += `\n📝 備註\n${d.note}\n`;
+  
+  try { await navigator.clipboard.writeText(t); alert('日誌已複製！'); }
+  catch(e) { const a=document.getElementById('copyArea'); a.value=t; a.select(); document.execCommand('copy'); alert('日誌已複製 (兼容模式)'); }
+}
+
+function manualSave() { save(false); }
+setInterval(()=>save(true), 900000);
+window.addEventListener('visibilitychange', ()=>{if(document.hidden)save(true)});
+function setNow(id) { const n=new Date(); document.getElementById(id).value=`${pad(n.getHours())}:${pad(n.getMinutes())}`; calcTime(); autoTimeRange(); } 
+function calcTime() { 
+    const d=(s,e)=>{if(!s||!e)return 0; const [h1,m1]=s.split(':').map(Number); const [h2,m2]=e.split(':').map(Number); return Math.max(0,(h2*60+m2)-(h1*60+m1));}; 
+    document.getElementById('wtDur').innerText=`持續時間: ${d(val('#wtStart'),val('#wtEnd'))} 分鐘`; 
+}
+function calcWater() { document.getElementById('wTotal').innerText=`總計: ${(Number(val('#wWork'))||0)+(Number(val('#wDay'))||0)} ML`; }
+load();
+</script>
+</body>
+</html>
