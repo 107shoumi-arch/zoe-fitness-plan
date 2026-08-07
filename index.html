@@ -321,25 +321,23 @@ const pad = n => String(n).padStart(2, '0');
 let tInt = null, totalStartTime = 0, lapStartTime = 0, tTotalElapsed = 0, laps = [];
 let lapPausedTime = 0;
 
-/* === 新增：Enter 鍵自動跳轉下一欄位 === */
+/* === Enter 鍵自動跳轉下一欄位 === */
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
-    // 抓取所有可以 focus 的元素
     const focusable = Array.from(document.querySelectorAll('input:not([type="hidden"]), select, textarea, button:not([disabled])'))
       .filter(el => el.tabIndex >= 0 && !el.classList.contains('del-btn') && el.offsetParent !== null);
     
     const index = focusable.indexOf(document.activeElement);
     if (index > -1 && index < focusable.length - 1) {
-      e.preventDefault(); // 阻止預設換行
+      e.preventDefault();
       focusable[index + 1].focus();
     }
   }
 });
 
-/* === 新增：肌群自動辨識與進度條渲染 === */
+/* === 肌群自動辨識與進度條渲染 === */
 function detectMuscleGroup(name) {
   if (!name) return null;
-  // 依照器材名稱關鍵字判斷
   if (/胸|蝴蝶機（夾胸）|臥推|飛鳥/.test(name)) return "胸部";
   if (/背|划船|下拉|面拉|反向飛鳥|直臂下壓/.test(name)) return "背部";
   if (/肩|側平舉/.test(name)) return "肩部";
@@ -369,16 +367,14 @@ function updateProgress() {
     return;
   }
 
-  // 全身累計總組數卡片
   const totalHtml = `
   <div style="background:#252525; border:1px solid #3d3d3d; border-left:4px solid var(--accent); padding:10px 14px; border-radius:6px; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
     <span style="font-weight:bold; color:var(--text-main); font-size:0.9rem; letter-spacing:1px;">全身累計總組數</span>
     <span style="font-weight:bold; color:var(--accent); font-size:1.1rem; font-family:'Roboto Mono';">${totalSets} 組</span>
   </div>`;
 
-  // 16組為達標紅線
   const html = Object.keys(counts)
-    .filter(k => counts[k] > 0 && k !== "其他") // 隱藏沒練的與無法分類的
+    .filter(k => counts[k] > 0 && k !== "其他")
     .map(k => {
       const sets = counts[k];
       const isOver = sets >= 16;
@@ -438,15 +434,16 @@ function createRow(tid, ph, vals={}) {
 function addExercise(d={}) {
   const {div}=createRow('equipment-options','器材名稱',d);
   const c=document.createElement('div'); c.className='item-controls';
-  // 綁定 oninput 到組數，即時更新進度條
   c.innerHTML=`<input type="number" class="s" placeholder="組" value="${d.s||''}" oninput="updateProgress();"><input type="number" class="r" placeholder="次" value="${d.r||''}"><input type="number" class="w" placeholder="kg" value="${d.w||''}"><input type="number" class="rt" placeholder="休(s)" value="${d.rt||''}">`;
   div.append(c); document.getElementById('exerciseList').append(div);
   updateProgress();
 }
+
+/* === 修改：新增坡度(inc)輸入框，與上方4欄設計完全一致 === */
 function addCardio(d={}) {
   const {div}=createRow('cardio-options','有氧項目',d);
-  const c=document.createElement('div'); c.className='item-controls'; c.style.gridTemplateColumns="1fr 1fr 1fr";
-  c.innerHTML=`<input type="number" class="dur" placeholder="分" value="${d.dur||''}"><input type="number" class="lv" placeholder="Lv" value="${d.lv||''}"><input type="number" class="bpm" placeholder="心率" value="${d.bpm||''}">`;
+  const c=document.createElement('div'); c.className='item-controls';
+  c.innerHTML=`<input type="number" class="dur" placeholder="分" value="${d.dur||''}"><input type="number" class="inc" placeholder="坡度" value="${d.inc||''}"><input type="number" class="lv" placeholder="Lv" value="${d.lv||''}"><input type="number" class="bpm" placeholder="心率" value="${d.bpm||''}">`;
   div.append(c); document.getElementById('cardioList').append(div);
 }
 
@@ -459,7 +456,8 @@ function save(silent=true) {
     dateVal: val('#dateVal'), timeRange: val('#timeRange'),
     wtStart:val('#wtStart'), wtEnd:val('#wtEnd'), caStart:val('#caStart'), caEnd:val('#caEnd'), stretch:val('#stretch'), wWork:val('#wWork'), wDay:val('#wDay'), note:val('#note'),
     exs: getAll('#exerciseList .item-row').map(r=>({n:getName(r),s:v(r,'.s'),r:v(r,'.r'),w:v(r,'.w'),rt:v(r,'.rt')})),
-    cardios: getAll('#cardioList .item-row').map(r=>({n:getName(r),dur:v(r,'.dur'),lv:v(r,'.lv'),bpm:v(r,'.bpm')})),
+    /* === 修改：儲存有氧坡度數值 === */
+    cardios: getAll('#cardioList .item-row').map(r=>({n:getName(r),dur:v(r,'.dur'),inc:v(r,'.inc'),lv:v(r,'.lv'),bpm:v(r,'.bpm')})),
     timer: {totalStart:totalStartTime, lapStart:lapStartTime, totalElapsed:tTotalElapsed, running:!!tInt, laps:laps, lapPausedTime: lapPausedTime}
   };
   localStorage.setItem(KEY,JSON.stringify(d));
@@ -487,7 +485,6 @@ function load() {
     renderLaps();
     if(d.timer.running) { 
         totalStartTime = d.timer.totalStart || Date.now(); 
-        /* === 修正：這裡原本拼錯為 lapStart = ... 導致數值為0跳出幾萬分鐘 === */
         lapStartTime = d.timer.lapStart || Date.now(); 
         startT(); 
     } 
@@ -519,7 +516,6 @@ function startT() {
   const btn = document.getElementById('tAction'); btn.innerText = "暫停"; btn.className = "btn-pause"; document.getElementById('tLapReset').innerText = "計圈"; 
   tInt = setInterval(() => { 
       const now = Date.now(); 
-      /* === 修正：增加 Math.max(0, ...) 避免時間錯亂 === */
       const curLap = Math.max(0, now - lapStartTime);
       const curTotal = Math.max(0, tTotalElapsed + (now - totalStartTime));
       updT(curLap, curTotal); 
@@ -602,7 +598,6 @@ async function genText() {
   
   const validExs = d.exs.filter(x => x.n);
   if(validExs.length > 0) { 
-    /* === 新增：計算全身總組數並加入文字標題中 === */
     let totalSets = 0;
     validExs.forEach(x => { totalSets += (parseInt(x.s) || 0); });
     t += `\n🏋️ 重訓項目 (全身累計: ${totalSets} 組)\n`; 
@@ -628,6 +623,8 @@ async function genText() {
       let details = [];
       if(x.dur) details.push(`${x.dur}分`);
       let subDetails = [];
+      /* === 修改：在日誌匯出中自動加入坡度 === */
+      if(x.inc) subDetails.push(`坡度${x.inc}`);
       if(x.lv) subDetails.push(`Lv.${x.lv}`);
       if(x.bpm) subDetails.push(`${x.bpm}bpm`);
       if(subDetails.length > 0) details.push(`(${subDetails.join('/')})`);
