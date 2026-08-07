@@ -307,7 +307,7 @@
 
 <template id="cardio-options">
   <option value="">— 選擇項目 —</option>
-  <option>滑步機</option><option>階梯機</option><option>踏步機</option><option>躺式腳踏車</option><option>直立腳踏車</option><option>跑步機</option>
+  <option>滑步機</option><option>階梯機</option><option>踏步機</option><option>躺式腳踏車</option><option>直立腳踏車</option><option>跑步機</option><option>跑步機高斜坡步行</option>
   <option value="__custom__">自訂...</option>
 </template>
 
@@ -330,7 +330,7 @@ document.addEventListener('keydown', function(e) {
     
     const index = focusable.indexOf(document.activeElement);
     if (index > -1 && index < focusable.length - 1) {
-      e.preventDefault(); // 阻止預設換行（textarea 還是可以靠 shift+enter 或其他方式，但這裡統一跳轉最順手）
+      e.preventDefault(); // 阻止預設換行
       focusable[index + 1].focus();
     }
   }
@@ -369,6 +369,13 @@ function updateProgress() {
     return;
   }
 
+  // 全身累計總組數卡片
+  const totalHtml = `
+  <div style="background:#252525; border:1px solid #3d3d3d; border-left:4px solid var(--accent); padding:10px 14px; border-radius:6px; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+    <span style="font-weight:bold; color:var(--text-main); font-size:0.9rem; letter-spacing:1px;">全身累計總組數</span>
+    <span style="font-weight:bold; color:var(--accent); font-size:1.1rem; font-family:'Roboto Mono';">${totalSets} 組</span>
+  </div>`;
+
   // 16組為達標紅線
   const html = Object.keys(counts)
     .filter(k => counts[k] > 0 && k !== "其他") // 隱藏沒練的與無法分類的
@@ -389,7 +396,7 @@ function updateProgress() {
       </div>`;
     }).join('');
   
-  pCont.innerHTML = html || '<div class="prog-empty">無有效分類數據</div>';
+  pCont.innerHTML = totalHtml + (html || '');
 }
 
 function autoTimeRange() {
@@ -479,8 +486,9 @@ function load() {
     lapPausedTime = d.timer.lapPausedTime || 0;
     renderLaps();
     if(d.timer.running) { 
-        totalStartTime = d.timer.totalStart; 
-        lapStart = d.timer.lapStart; 
+        totalStartTime = d.timer.totalStart || Date.now(); 
+        /* === 修正：這裡原本拼錯為 lapStart = ... 導致數值為0跳出幾萬分鐘 === */
+        lapStartTime = d.timer.lapStart || Date.now(); 
         startT(); 
     } 
     else { 
@@ -511,15 +519,18 @@ function startT() {
   const btn = document.getElementById('tAction'); btn.innerText = "暫停"; btn.className = "btn-pause"; document.getElementById('tLapReset').innerText = "計圈"; 
   tInt = setInterval(() => { 
       const now = Date.now(); 
-      updT(now - lapStartTime, tTotalElapsed + (now - totalStartTime)); 
+      /* === 修正：增加 Math.max(0, ...) 避免時間錯亂 === */
+      const curLap = Math.max(0, now - lapStartTime);
+      const curTotal = Math.max(0, tTotalElapsed + (now - totalStartTime));
+      updT(curLap, curTotal); 
   }, 50);
 }
 function timerAct() {
   if(tInt) { 
       clearInterval(tInt); tInt = null; 
       const now = Date.now();
-      tTotalElapsed += now - totalStartTime; 
-      lapPausedTime = now - lapStartTime;    
+      tTotalElapsed += Math.max(0, now - totalStartTime); 
+      lapPausedTime = Math.max(0, now - lapStartTime);    
       
       document.getElementById('tAction').innerText = "繼續"; document.getElementById('tAction').className = "btn-start"; document.getElementById('tLapReset').innerText = "重置"; save(true); 
   }
@@ -533,7 +544,7 @@ function timerAct() {
           laps = []; renderLaps(); 
       } else { 
           totalStartTime = now; 
-          lapStartTime = now - lapPausedTime; 
+          lapStartTime = now - (lapPausedTime || 0); 
       } 
       startT(); 
   }
@@ -542,7 +553,7 @@ function timerAct() {
 function timerLapReset() {
   if(tInt) { 
       const now = Date.now();
-      laps.unshift(now - lapStartTime); renderLaps(); 
+      laps.unshift(Math.max(0, now - lapStartTime)); renderLaps(); 
       lapStartTime = now; 
   } 
   else { 
@@ -591,7 +602,11 @@ async function genText() {
   
   const validExs = d.exs.filter(x => x.n);
   if(validExs.length > 0) { 
-    t += `\n🏋️ 重訓項目\n`; 
+    /* === 新增：計算全身總組數並加入文字標題中 === */
+    let totalSets = 0;
+    validExs.forEach(x => { totalSets += (parseInt(x.s) || 0); });
+    t += `\n🏋️ 重訓項目 (全身累計: ${totalSets} 組)\n`; 
+
     validExs.forEach(x => {
       let details = [];
       if(x.s && x.r) details.push(`${x.s}組×${x.r}次`);
